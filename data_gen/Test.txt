@@ -1,0 +1,41 @@
+`timescale 1ns/1ps
+
+module tb_data_gen;
+
+    reg         clka;
+    reg [9:0]   addra;
+    wire [11:0] douta;
+
+    // DUT (Device Under Test)
+    data_gen uut (
+        .clka (clka),
+        .addra(addra),
+        .douta(douta)
+    );
+
+    // Clock generation (100 MHz → 10 ns period)
+    initial begin
+        clka = 0;
+        forever #5 clka = ~clka;
+    end
+
+    // Test sequence
+    initial begin
+        // Initialize address
+        addra = 10'd0;
+
+        // Wait a few cycles
+        #20;
+
+        // Sweep through ROM addresses
+        repeat (1024) begin
+            @(posedge clka);
+            addra = addra + 1;
+        end
+
+        // End simulation
+        #20;
+        $finish;
+    end
+
+endmodule
